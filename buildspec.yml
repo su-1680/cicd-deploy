@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t your-ecs-service-name .
+      - docker tag your-ecs-service-name:latest your-account-id.dkr.ecr.your-region.amazonaws.com/your-repository-name:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push your-account-id.dkr.ecr.your-region.amazonaws.com/your-repository-name:latest
+
+artifacts:
+  files:
+    - 'Dockerfile'
+    - 'your-service-code/**/*'
